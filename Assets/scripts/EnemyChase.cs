@@ -1,29 +1,31 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyChase : MonoBehaviour
 {
-    public Transform player;      // Player to chase
-    public float speed = 3f;      // Enemy movement speed
+    public Transform player;  // Assign your player here
+
+    private NavMeshAgent agent;
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+    }
 
     void Update()
     {
         if (player == null) return;
 
-        // Move toward the player
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            player.position,
-            speed * Time.deltaTime
-        );
-
-        // Optional: rotate to face player
-        transform.LookAt(player);
+        // Keep chasing the player
+        agent.SetDestination(player.position);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    // Use trigger instead of collision
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
             GameOver();
         }
@@ -32,8 +34,6 @@ public class EnemyChase : MonoBehaviour
     void GameOver()
     {
         Debug.Log("GAME OVER");
-
-        // Reload the scene (simple game over)
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
