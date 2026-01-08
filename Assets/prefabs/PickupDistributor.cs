@@ -12,7 +12,7 @@ public class PickupDistributor : MonoBehaviour
     {
         PlacePickups();
     }
-
+   
     void PlacePickups()
     {
         int placed = 0;
