@@ -1,51 +1,54 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class PickupDistributor : MonoBehaviour
+public class PickupSpawner : MonoBehaviour
 {
-    public GameObject pickupPrefab;      // The pickup cube prefab
-    public int numberOfPickups = 20;     // How many to place
-    public Vector3 areaMin;              // Lower bounds of spawn area
-    public Vector3 areaMax;              // Upper bounds of spawn area
-    public float minDistance = 1.5f;     // Minimum distance between pickups
+    public GameObject pickupPrefab;   // Assign your pickup prefab in the inspector
+    public float spawnRadius = 10f;   // Radius around the spawn point to find a valid position
+    public int maxTries = 10;         // Maximum number of attempts to find a valid spawn point
 
     private void Start()
     {
-        PlacePickups();
+        SpawnPickup();
     }
-   
-    void PlacePickups()
+
+    // Method to spawn the pickup at a valid NavMesh position
+    void SpawnPickup()
     {
-        int placed = 0;
-        int attempts = 0;
-        Vector3[] positions = new Vector3[numberOfPickups];
+        Vector3 spawnPosition = FindValidSpawnPosition(transform.position, spawnRadius);
 
-        while (placed < numberOfPickups && attempts < numberOfPickups * 10)
+        if (spawnPosition != Vector3.zero)
         {
-            attempts++;
-            Vector3 candidate = new Vector3(
-                Random.Range(areaMin.x, areaMax.x),
-                Random.Range(areaMin.y, areaMax.y),
-                Random.Range(areaMin.z, areaMax.z)
-            );
+            // Instantiate the pickup at the valid position
+            Instantiate(pickupPrefab, spawnPosition, Quaternion.identity);
+            Debug.Log("Pickup Spawned at: " + spawnPosition);
+        }
+        else
+        {
+            Debug.LogWarning("Failed to find a valid spawn position.");
+        }
+    }
 
-            bool tooClose = false;
-            for (int i = 0; i < placed; i++)
-            {
-                if (Vector3.Distance(candidate, positions[i]) < minDistance)
-                {
-                    tooClose = true;
-                    break;
-                }
-            }
+    // Try to find a valid spawn position within a given radius
+    Vector3 FindValidSpawnPosition(Vector3 origin, float radius)
+    {
+        Vector3 randomPosition = origin;
 
-            if (!tooClose)
+        // Try up to 'maxTries' times to find a valid position
+        for (int i = 0; i < maxTries; i++)
+        {
+            // Random position within the radius
+            randomPosition = origin + new Vector3(Random.Range(-radius, radius), 0, Random.Range(-radius, radius));
+
+            // Check if the position is valid on the NavMesh (i.e., on open ground)
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomPosition, out hit, 1.0f, NavMesh.AllAreas))
             {
-                positions[placed] = candidate;
-                Instantiate(pickupPrefab, candidate, Quaternion.identity);
-                placed++;
+                return hit.position; // Return the valid position
             }
         }
 
-        Debug.Log($"Placed {placed} pickups with {attempts} attempts.");
+        // Return Vector3.zero if no valid position was found after maxTries
+        return Vector3.zero;
     }
 }
