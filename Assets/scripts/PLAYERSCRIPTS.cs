@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
@@ -12,27 +13,26 @@ public class PlayerController : MonoBehaviour
     private float movementY;
 
     [Header("Movement Settings")]
-    public float speed = 6f;  // Movement speed
+    public float speed = 6f;
 
     [Header("UI Settings")]
     public TextMeshProUGUI countText;
     public GameObject winTextObject;
 
-    private int totalPickups; // Will be calculated automatically
+    private int totalPickups;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
+
         winTextObject.SetActive(false);
 
-        // Count all pickups in the scene automatically
         totalPickups = GameObject.FindGameObjectsWithTag("PickUp").Length;
-
         SetCountText();
 
-        // Prevent player from tipping over
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        // FIX: rotate player to face UP at start
+        transform.rotation = Quaternion.Euler(90f, 0f, 0f); // try -90 if needed
     }
 
     void OnMove(InputValue movementValue)
@@ -46,12 +46,6 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 movement = new Vector3(movementX, 0f, movementY).normalized;
         rb.linearVelocity = movement * speed;
-
-        if (movement.sqrMagnitude > 0.01f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, 0.25f);
-        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -79,20 +73,5 @@ public class PlayerController : MonoBehaviour
         winTextObject.SetActive(true);
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
-
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject e in enemies)
-        {
-            Rigidbody er = e.GetComponent<Rigidbody>();
-            if (er != null) er.isKinematic = true;
-        }
-
-        // Optional: restart the scene automatically
-        // Invoke(nameof(RestartGame), 3f);
-    }
-
-    void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

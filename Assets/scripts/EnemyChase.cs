@@ -1,12 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyChase : MonoBehaviour
 {
     public Transform player;  // Assign your player here
-
     private NavMeshAgent agent;
 
     void Start()
@@ -22,18 +20,13 @@ public class EnemyChase : MonoBehaviour
         agent.SetDestination(player.position);
     }
 
-    // Use trigger instead of collision
+    // When enemy hits the player
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            GameOver();
+            Destroy(other.gameObject); // DESTROY PLAYER
+            Debug.Log("Player Destroyed");
         }
-    }
-
-    void GameOver()
-    {
-        Debug.Log("GAME OVER");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
