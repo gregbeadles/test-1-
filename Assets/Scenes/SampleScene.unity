@@ -1424,6 +1424,10 @@ PrefabInstance:
       value: -30
       objectReference: {fileID: 0}
     - target: {fileID: -4353122344772359911, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
+      propertyPath: spawnRadius
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: -4353122344772359911, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
       propertyPath: pickupPrefab
       value: 
       objectReference: {fileID: 4091357665338087480, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
@@ -1453,7 +1457,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2561087020370138583, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.009
+      value: 0.079
       objectReference: {fileID: 0}
     - target: {fileID: 2561087020370138583, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
       propertyPath: m_LocalRotation.w

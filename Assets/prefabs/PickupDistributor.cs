@@ -5,27 +5,32 @@ public class PickupSpawner : MonoBehaviour
 {
     public GameObject pickupPrefab;   // Assign your pickup prefab in the inspector
     public float spawnRadius = 10f;   // Radius around the spawn point to find a valid position
+    public int numberOfPickups = 5;   // Number of pickups to spawn
     public int maxTries = 10;         // Maximum number of attempts to find a valid spawn point
 
     private void Start()
     {
-        SpawnPickup();
+        SpawnPickups(numberOfPickups); // Spawn the pickups at start
     }
 
-    // Method to spawn the pickup at a valid NavMesh position
-    void SpawnPickup()
+    // Method to spawn a specific number of pickups
+    void SpawnPickups(int count)
     {
-        Vector3 spawnPosition = FindValidSpawnPosition(transform.position, spawnRadius);
+        for (int i = 0; i < count; i++)
+        {
+            // Try to spawn each pickup
+            Vector3 spawnPosition = FindValidSpawnPosition(transform.position, spawnRadius);
 
-        if (spawnPosition != Vector3.zero)
-        {
-            // Instantiate the pickup at the valid position
-            Instantiate(pickupPrefab, spawnPosition, Quaternion.identity);
-            Debug.Log("Pickup Spawned at: " + spawnPosition);
-        }
-        else
-        {
-            Debug.LogWarning("Failed to find a valid spawn position.");
+            if (spawnPosition != Vector3.zero)
+            {
+                // Instantiate the pickup at the valid position
+                Instantiate(pickupPrefab, spawnPosition, Quaternion.identity);
+                Debug.Log("Pickup Spawned at: " + spawnPosition);
+            }
+            else
+            {
+                Debug.LogWarning("Failed to find a valid spawn position.");
+            }
         }
     }
 
