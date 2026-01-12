@@ -478,8 +478,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 9
+  dashForce: 20
+  dashDuration: 0.15
+  dashCooldown: 6
   countText: {fileID: 1843588588}
   winTextObject: {fileID: 1602349703}
+  dashCooldownText: {fileID: 0}
 --- !u!114 &243848643
 MonoBehaviour:
   m_ObjectHideFlags: 0
