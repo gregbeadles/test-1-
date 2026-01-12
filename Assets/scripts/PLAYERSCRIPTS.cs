@@ -150,7 +150,16 @@ public class PlayerController : MonoBehaviour
     void WinGame()
     {
         winTextObject.SetActive(true);
+
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
+
+        EnemyChase[] enemies = FindObjectsOfType<EnemyChase>();
+
+        foreach (EnemyChase enemy in enemies)
+        {
+            enemy.StopChasing();
+        }
     }
+
 }

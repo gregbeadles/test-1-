@@ -1576,7 +1576,7 @@ PrefabInstance:
       objectReference: {fileID: 4091357665338087480, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
     - target: {fileID: -4353122344772359911, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
       propertyPath: numberOfPickups
-      value: 24
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2561087020370138583, guid: 3f48b2358411df7409e76b5671c59d95, type: 3}
       propertyPath: m_LocalScale.x
