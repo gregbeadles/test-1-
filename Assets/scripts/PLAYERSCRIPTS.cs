@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
 
+    // Stores last non-zero movement direction
+    private Vector3 lastMoveDirection = Vector3.forward;
+
     [Header("Movement Settings")]
     public float speed = 6f;
 
@@ -41,7 +44,7 @@ public class PlayerController : MonoBehaviour
         totalPickups = GameObject.FindGameObjectsWithTag("PickUp").Length;
         SetCountText();
 
-        // Face UP at start
+        // Face UP at start (Pac-Man style)
         transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 
         UpdateDashUI();
@@ -62,7 +65,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(Dash());
         }
 
-        // Cooldown timer
+        // Dash cooldown countdown
         if (!canDash)
         {
             dashCooldownTimer -= Time.deltaTime;
@@ -81,8 +84,15 @@ public class PlayerController : MonoBehaviour
     {
         if (isDashing) return;
 
-        Vector3 movement = new Vector3(movementX, 0f, movementY).normalized;
-        rb.linearVelocity = movement * speed;
+        Vector3 movement = new Vector3(movementX, 0f, movementY);
+
+        // Save last movement direction if player is moving
+        if (movement.sqrMagnitude > 0.01f)
+        {
+            lastMoveDirection = movement.normalized;
+        }
+
+        rb.linearVelocity = movement.normalized * speed;
     }
 
     System.Collections.IEnumerator Dash()
@@ -91,12 +101,12 @@ public class PlayerController : MonoBehaviour
         isDashing = true;
         dashCooldownTimer = dashCooldown;
 
-        Vector3 dashDirection = new Vector3(movementX, 0f, movementY).normalized;
+        Vector3 inputDirection = new Vector3(movementX, 0f, movementY);
 
-        if (dashDirection == Vector3.zero)
-        {
-            dashDirection = transform.forward;
-        }
+        // If not moving, dash in last direction
+        Vector3 dashDirection = inputDirection.sqrMagnitude > 0.01f
+            ? inputDirection.normalized
+            : lastMoveDirection;
 
         rb.linearVelocity = dashDirection * dashForce;
 
@@ -144,4 +154,3 @@ public class PlayerController : MonoBehaviour
         rb.isKinematic = true;
     }
 }
-
