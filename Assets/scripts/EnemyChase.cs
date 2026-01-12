@@ -46,13 +46,12 @@ public class EnemyChase : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Destroy(other.gameObject); // Destroy player
+            ShowGameOverScreen();  // show UI first
+            Destroy(other.gameObject); // then destroy player
             Debug.Log("Player Destroyed");
-
-            // Show the Game Over screen
-            ShowGameOverScreen();
         }
     }
+
 
     // Show Game Over screen
     void ShowGameOverScreen()
