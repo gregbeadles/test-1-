@@ -2172,10 +2172,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.48474273
+  m_Height: 2.9084563
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: -0.10924792, y: -0.007970333, z: -0.021158457}
 --- !u!23 &492274592
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2239,7 +2239,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -17.58, y: 0.83, z: 0.05}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2298,7 +2298,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 6
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -2905,7 +2905,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8746c33064b569445baa804c4150ae78, type: 2}
+  - {fileID: 2100000, guid: 520e049fb5963c64185514d1f53692ba, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4224,6 +4224,7 @@ GameObject:
   - component: {fileID: 1409053495}
   - component: {fileID: 1409053494}
   - component: {fileID: 1409053493}
+  - component: {fileID: 1409053498}
   m_Layer: 0
   m_Name: TELEPORTER (1)
   m_TagString: Untagged
@@ -4244,7 +4245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 1898700315}
-  exitOffset: {x: 2, y: 0, z: 0}
+  exitOffset: {x: 0, y: 0, z: 2}
 --- !u!65 &1409053494
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4328,12 +4329,25 @@ Transform:
   m_GameObject: {fileID: 1409053492}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.99, y: 0.69, z: 24.65}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 25.3, y: 0.69, z: 28}
+  m_LocalScale: {x: 1, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1409053498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1409053492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e233d477a8adc4ab55d0862a21a321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: {x: 0, y: 180, z: 0}
 --- !u!1 &1418266262
 GameObject:
   m_ObjectHideFlags: 0
@@ -6351,6 +6365,7 @@ GameObject:
   - component: {fileID: 1898700318}
   - component: {fileID: 1898700317}
   - component: {fileID: 1898700316}
+  - component: {fileID: 1898700319}
   m_Layer: 0
   m_Name: TELEPORTER
   m_TagString: Untagged
@@ -6441,8 +6456,8 @@ Transform:
   m_GameObject: {fileID: 1898700311}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25.21, y: 0.76, z: -25.52}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -24.9, y: 0.76, z: -27.4}
+  m_LocalScale: {x: 1, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -6510,7 +6525,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 1409053497}
-  exitOffset: {x: -2, y: 0, z: 0}
+  exitOffset: {x: 0, y: 0, z: -2}
+--- !u!114 &1898700319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898700311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e233d477a8adc4ab55d0862a21a321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: {x: 0, y: 180, z: 0}
 --- !u!1 &1911104592
 GameObject:
   m_ObjectHideFlags: 0
