@@ -156,4 +156,12 @@ public class PlayerController : MonoBehaviour
         foreach (var enemy in FindObjectsOfType<EnemyChase>())
             enemy.StopChasing();
     }
+
+
+    // Add this anywhere inside the PlayerController class
+    public int GetPickupCount()
+    {
+        return count;
+    }
+
 }
