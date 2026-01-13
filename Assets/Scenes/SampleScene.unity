@@ -2851,7 +2851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 243848648}
-  speed: 8
+  speed: 7.5
   acceleration: 50
   angularSpeed: 1200
   gameOverScreen: {fileID: 692232253}
