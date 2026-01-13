@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using UnityEngine.SceneManagement;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -11,7 +11,6 @@ public class PlayerController : MonoBehaviour
 
     private float movementX;
     private float movementY;
-
     private Vector3 lastMoveDirection = Vector3.forward;
 
     [Header("Movement Settings")]
@@ -21,45 +20,46 @@ public class PlayerController : MonoBehaviour
     public float dashForce = 20f;
     public float dashDuration = 0.15f;
     public float dashCooldown = 6f;
-
     private bool canDash = true;
     private bool isDashing = false;
     private float dashCooldownTimer = 0f;
+
+    [Header("Jump Settings")]
+    public float jumpHeight = 6f;       // Max jump height
+    public float jumpCooldown = 10f;    // Jump cooldown in seconds
+    private bool canJump = true;
+    private float jumpCooldownTimer = 0f;
 
     [Header("UI Settings")]
     public TextMeshProUGUI countText;
     public GameObject winTextObject;
     public TextMeshProUGUI dashCooldownText;
+    public TextMeshProUGUI jumpCooldownText;
 
     private int totalPickups;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
         count = 0;
 
         winTextObject.SetActive(false);
-
         totalPickups = GameObject.FindGameObjectsWithTag("PickUp").Length;
         SetCountText();
 
         transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
         UpdateDashUI();
+        UpdateJumpUI();
     }
 
-    // OnMove now filters out arrow keys while keeping WASD & gamepad
     void OnMove(InputValue movementValue)
     {
         Vector2 input = movementValue.Get<Vector2>();
-
-        // Detect if input comes from keyboard
         if (Keyboard.current != null && Keyboard.current.anyKey.isPressed)
         {
             float x = 0f;
             float y = 0f;
-
-            // Only allow WASD keys
             if (Keyboard.current.wKey.isPressed) y += 1f;
             if (Keyboard.current.sKey.isPressed) y -= 1f;
             if (Keyboard.current.aKey.isPressed) x -= 1f;
@@ -67,13 +67,9 @@ public class PlayerController : MonoBehaviour
 
             movementX = x;
             movementY = y;
-
-            // Ignore arrow keys completely
-            // (do not include Keyboard.current.upArrowKey, etc.)
         }
         else
         {
-            // Gamepad or other devices: use the input vector directly
             movementX = input.x;
             movementY = input.y;
         }
@@ -81,9 +77,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Dash
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame && canDash)
             StartCoroutine(Dash());
 
+        // Jump (can jump even in mid-air if cooldown is over)
+        if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame && canJump)
+            Jump();
+
+        // Dash cooldown timer
         if (!canDash)
         {
             dashCooldownTimer -= Time.deltaTime;
@@ -92,24 +94,51 @@ public class PlayerController : MonoBehaviour
                 canDash = true;
                 dashCooldownTimer = 0f;
             }
+            UpdateDashUI();
         }
 
-        UpdateDashUI();
+        // Jump cooldown timer
+        if (!canJump)
+        {
+            jumpCooldownTimer -= Time.deltaTime;
+            if (jumpCooldownTimer <= 0f)
+            {
+                canJump = true; // Re-enable jump once cooldown ends
+                jumpCooldownTimer = 0f;
+            }
+            UpdateJumpUI();
+        }
     }
 
     void FixedUpdate()
     {
-        if (isDashing) return;
+        if (!isDashing)
+        {
+            Vector3 horizontalMovement = new Vector3(movementX, 0f, movementY).normalized * speed;
+            Vector3 velocity = rb.linearVelocity;
+            velocity.x = horizontalMovement.x;
+            velocity.z = horizontalMovement.z;
+            rb.linearVelocity = velocity;
 
-        Vector3 movement = new Vector3(movementX, 0f, movementY);
-
-        if (movement.sqrMagnitude > 0.01f)
-            lastMoveDirection = movement.normalized;
-
-        rb.linearVelocity = movement.normalized * speed;
+            if (horizontalMovement.sqrMagnitude > 0.01f)
+                lastMoveDirection = horizontalMovement.normalized;
+        }
     }
 
-    System.Collections.IEnumerator Dash()
+    void Jump()
+    {
+        // Calculate velocity required to reach jumpHeight
+        float jumpVelocity = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y));
+        Vector3 v = rb.linearVelocity;
+        v.y = jumpVelocity;
+        rb.linearVelocity = v;
+
+        canJump = false; // Trigger cooldown
+        jumpCooldownTimer = jumpCooldown;
+        UpdateJumpUI();
+    }
+
+    IEnumerator Dash()
     {
         canDash = false;
         isDashing = true;
@@ -118,7 +147,7 @@ public class PlayerController : MonoBehaviour
         Vector3 inputDir = new Vector3(movementX, 0f, movementY);
         Vector3 dashDir = inputDir.sqrMagnitude > 0.01f ? inputDir.normalized : lastMoveDirection;
 
-        rb.linearVelocity = dashDir * dashForce;
+        rb.linearVelocity = dashDir * dashForce + new Vector3(0, rb.linearVelocity.y, 0);
 
         yield return new WaitForSeconds(dashDuration);
         isDashing = false;
@@ -127,8 +156,13 @@ public class PlayerController : MonoBehaviour
     void UpdateDashUI()
     {
         if (dashCooldownText == null) return;
-
         dashCooldownText.text = canDash ? "Dash: READY" : $"Dash: {dashCooldownTimer:F1}s";
+    }
+
+    void UpdateJumpUI()
+    {
+        if (jumpCooldownText == null) return;
+        jumpCooldownText.text = canJump ? "Jump: READY" : $"Jump: {jumpCooldownTimer:F1}s";
     }
 
     void OnTriggerEnter(Collider other)
@@ -143,25 +177,12 @@ public class PlayerController : MonoBehaviour
 
     void SetCountText()
     {
-        countText.text = $"Count: {count} / {totalPickups}";
-        if (count >= totalPickups) WinGame();
+        if (countText != null)
+            countText.text = $"Count: {count} / {totalPickups}";
+
+        if (count >= totalPickups && winTextObject != null)
+            winTextObject.SetActive(true);
     }
 
-    void WinGame()
-    {
-        winTextObject.SetActive(true);
-        rb.linearVelocity = Vector3.zero;
-        rb.isKinematic = true;
-
-        foreach (var enemy in FindObjectsOfType<EnemyChase>())
-            enemy.StopChasing();
-    }
-
-
-    // Add this anywhere inside the PlayerController class
-    public int GetPickupCount()
-    {
-        return count;
-    }
-
+    public int GetPickupCount() => count;
 }
